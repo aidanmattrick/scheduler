@@ -11,12 +11,14 @@ import "./styles.scss";
 
 
 
+
 export default function Appointment(props) {
+  const slot = (props.interview) ? <Show interview={props.interview}/> : <Empty/>;
   return (
-  <article className="appointment">
-    <Header time={props.time} />
-    <Empty/>
-  </article>
+    <article className="appointment">
+      <Header time={props.time} />
+      {slot}
+    </article>
   );
 }
 

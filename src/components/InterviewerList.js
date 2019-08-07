@@ -9,15 +9,15 @@ export default function InterviewerList(props) {
   <h4 class="interviewers__header text--light">Interviewer</h4>
   <ul class="interviewers__list">
 
+
   {props.interviewers.map((interviewer) => {
     return (
     <InterviewerListItem
     key={interviewer.name}
     selected={interviewer.id === props.interviewer}
-    //^WTF does this line do
     avatar={interviewer.avatar}
     name={interviewer.name}
-    setInterviewer={(event) => props.setInterviewer(interviewer.id)}
+    setInterviewer={(event) => props.onChange(interviewer.id)}
     />
     );
 })}
