@@ -14,12 +14,14 @@ export default function Application(props) {
   const [allInterviewers, setAllInterviewers] = useState([]);
   //Whenever setDay is called, component is re-rendered
 
+  //ensuring that API data sets State
   const handleData = (daysData, interviewersData, appointmentsData) => {
     setAllAppointments(appointmentsData.data);
     setAllInterviewers(interviewersData.data);
     setDays(daysData.data);
   };
   
+  //Getting API data
   const fetchData = () => { 
     axios.all([
       client.get('/days'),
@@ -28,7 +30,7 @@ export default function Application(props) {
     ]).then(axios.spread(handleData));
   };
 
- 
+ //Hook to make sure we run just once
   useEffect(fetchData, []);
 
   return (
@@ -54,6 +56,7 @@ export default function Application(props) {
         />
       </section>
       <section className="schedule">
+        
         <AppointmentList {...{days, selectedDayId, allAppointments, allInterviewers}} />
       </section>
     </main>
