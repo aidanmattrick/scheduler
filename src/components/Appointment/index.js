@@ -13,24 +13,25 @@ import "./styles.scss";
 
 
 export default function Appointment(props) {
-  const slot = (props.interview) ? <Show interview={props.interview}/> : <Empty/>;
+  const { id, time, interview } = props;
   return (
     <article className="appointment">
-      <Header time={props.time} />
-      {slot}
+      <Header time={time} />
+      {(interview) ? <Show {...{interview}} /> : <Empty/>}
     </article>
   );
 }
 
-export { Confirm };
-export { Empty };
-export { Error };
-export { Form };
-export { Header };
-export { Show };
-export { Status };
-export { Appointment };
-
+export { 
+  Appointment,
+  Confirm,
+  Empty,
+  Error,
+  Form,
+  Header,
+  Show,
+  Status,
+};
 // allows  you to type
 /// import {Show } from './Appointment';
 // instead of:  

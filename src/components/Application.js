@@ -1,13 +1,35 @@
-import React, { useState } from "react";
+import client from '../api';
+import axios from 'axios';
+import React, { useState, useEffect } from "react";
 
 import "components/Application.scss";
 
 import DayList from "./DayList";
-
+import AppointmentList from './AppointmentList';
 
 export default function Application(props) {
-  const [day, setDay] = useState("Monday");
+  const [selectedDayId, setSelectedDayId] = useState(1);
+  const [days, setDays] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]);
+  const [allInterviewers, setAllInterviewers] = useState([]);
   //Whenever setDay is called, component is re-rendered
+
+  const handleData = (daysData, interviewersData, appointmentsData) => {
+    setAllAppointments(appointmentsData.data);
+    setAllInterviewers(interviewersData.data);
+    setDays(daysData.data);
+  };
+  
+  const fetchData = () => { 
+    axios.all([
+      client.get('/days'),
+      client.get('/interviewers'),
+      client.get('/appointments')
+    ]).then(axios.spread(handleData));
+  };
+
+ 
+  useEffect(fetchData, []);
 
   return (
     <main className="layout">
@@ -21,8 +43,8 @@ export default function Application(props) {
         <hr className="sidebar__separator sidebar--centered" />
           <DayList
             days={days}
-            day={day}
-            setDay={day => setDay(day)}
+            selectedDayId={selectedDayId}
+            setDay={(id) => setSelectedDayId(id)}
             />
         <nav className="sidebar__menu" />
         <img
@@ -32,31 +54,13 @@ export default function Application(props) {
         />
       </section>
       <section className="schedule">
-        {/* Replace this with the schedule elements durint the "The Scheduler" activity. */}
+        <AppointmentList {...{days, selectedDayId, allAppointments, allInterviewers}} />
       </section>
     </main>
   );
 }
 
-const days = [
-  {
-    id: 1,
-    name: "Monday",
-    spots: 2,
-  },
-  {
-    id: 2,
-    name: "Tuesday",
-    spots: 5,
-  },
-  {
-    id: 3,
-    name: "Wednesday",
-    spots: 0,
-  },
-];
-
-const appointments = [
+export const appointments = [
   {
     id: 1,
     time: "12pm",
@@ -84,6 +88,11 @@ const appointments = [
         avatar: "https://i.imgur.com/T2WwVfS.png",
       }
     }
+  },
+  {
+    id: 'last',
+    time: "3pm"
   }
+
 ];
 
