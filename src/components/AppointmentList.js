@@ -24,5 +24,5 @@ export default function AppointmentList(props) {
     }
   );
 
-  return appointments.map(appt => <Appointment key={appt.id} {...appt} />);
+  return appointments.map(appt => <Appointment key={appt.id} {...appt} allInterviewers={allInterviewers} />);
 }

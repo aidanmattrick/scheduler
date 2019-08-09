@@ -37,7 +37,7 @@ export default function Form(props) {
         placeholder="Enter Student Name"
       />
     </form>
-    <InterviewerList interviewers={props.interviewers} interviewer={interviewer} onChange={setInterviewer}/>
+    <InterviewerList interviewers={props.allInterviewers} interviewer={interviewer} onChange={setInterviewer}/>
   </section>
   <section className="appointment__card-right">
     <section className="appointment__actions">
