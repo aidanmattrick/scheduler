@@ -4,23 +4,25 @@ import { useState, useEffect } from "react";
 export default function useVisualMode(initialMode) {
   let result = {};
   const [mode, setMode] = useState(initialMode);
+  const [history, setHistory] = useState([initialMode]);
   result.mode = mode;
 
-  let modeHistory = [];
-  if (initialMode) modeHistory.push(initialMode);
-  
+  let modeHistory = history;
+
+
   const back = function back() {
-    if (modeHistory.length > 1) modeHistory.pop();
+    if (modeHistory.length > 1) {
+      modeHistory.pop()
+      setHistory(modeHistory);
+    }
     setMode(modeHistory[modeHistory.length - 1]);
     //setting the present to the last item in mode history
   };
 
   const transition = function transition(newMode, replace = false) {
-    if (replace) {
-      modeHistory[modeHistory.length - 1] = newMode;
-    } else {
-      modeHistory.push(newMode);
-    }
+    if (replace) modeHistory.pop();
+    modeHistory.push(newMode);
+    setHistory(modeHistory);
     setMode(modeHistory[modeHistory.length - 1]);
     //setting the present to the last item in mode history
   }
@@ -30,16 +32,4 @@ export default function useVisualMode(initialMode) {
   //stores a copy of the function into result
   //Where "this" in the function is always result
   return result;
-}
-
-  
-//   const [mode, setMode] = useState("");
-
-//   useEffect(() => {
-//     setMode(arg);
-//     return(() => {
-//     return {mode};
-//     });
-//   },[arg, mode]);
-
-// }
+};

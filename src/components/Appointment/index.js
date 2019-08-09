@@ -19,7 +19,6 @@ const EDIT = "EDIT";
 const STATUS = "STATUS";
 
 
-
 export default function Appointment(props) {
   const { id, time, interview, allInterviewers } = props;
   const visualMode = useVisualMode(interview ? SHOW : EMPTY);
