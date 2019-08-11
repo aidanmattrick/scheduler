@@ -63,11 +63,8 @@ function Application(props) {
       ...state.appointments[id],
       interview: { ...interview }
     };
-    return client.put(`/appointments/${id}`, appointment, {
-      validateStatus: function (status) {
-        return status >= 200 && status < 300; // Accept only if status code is 2xx
-      }
-    }).then(result => {
+    return client.put(`/appointments/${id}`, appointment)
+    .then(result => {
       const appointments = {
         ...state.appointments,
         [id]: getInterview(state, appointment)
@@ -77,11 +74,8 @@ function Application(props) {
   };
 
   const removeInterview = function(id) {
-    return client.delete(`/appointments/${id}`, {
-      validateStatus: function (status) {
-        return status >= 200 && status < 300; // Accept only if status code is 2xx
-      }
-    }).then(result => {
+    return client.delete(`/appointments/${id}`)
+    .then(result => {
       const appointments = {
         ...state.appointments,
         [id]: {
@@ -109,6 +103,7 @@ function Application(props) {
             days={state.days}
             selectedDayId={selectedDayId}
             setDay={(id) => setSelectedDayId(id)}
+            appointments={state.appointments}
             />
         <nav className="sidebar__menu" />
         <img className="sidebar__lhl sidebar--centered"

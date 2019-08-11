@@ -6,12 +6,14 @@ import InterviewerList from "../InterviewerList";
 
 
 export default function Form(props) {
-  const [studentName, setStudentName] = useState(props.name || "");
-  const [interviewer, setInterviewer] = useState(props.interviewer || null);
+  const { student: initialStudent, interviewer: initialInterviewer } = (props.interview ? props.interview : {});
+  const initialInterviewerId = (initialInterviewer) ? initialInterviewer.id : null;
+  const [studentName, setStudentName] = useState(initialStudent);
+  const [interviewer, setInterviewer] = useState(initialInterviewerId);
 
   function reset() {
-    setStudentName("");
-    setInterviewer(null);
+    setStudentName(initialStudent);
+    setInterviewer(initialInterviewerId);
     props.onCancel();
   }
 
