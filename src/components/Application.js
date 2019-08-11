@@ -1,37 +1,99 @@
 import client from '../api';
 import axios from 'axios';
+import { hot } from 'react-hot-loader/root';
 import React, { useState, useEffect } from "react";
 
 import "components/Application.scss";
 
 import DayList from "./DayList";
 import AppointmentList from './AppointmentList';
+import { withState as selectorsForState, getInterview } from '../helpers/selectors';
 
-export default function Application(props) {
-  const [selectedDayId, setSelectedDayId] = useState(1);
-  const [days, setDays] = useState([]);
-  const [allAppointments, setAllAppointments] = useState([]);
-  const [allInterviewers, setAllInterviewers] = useState([]);
-  //Whenever setDay is called, component is re-rendered
-
-  //ensuring that API data sets State
-  const handleData = (daysData, interviewersData, appointmentsData) => {
-    setAllAppointments(appointmentsData.data);
-    setAllInterviewers(interviewersData.data);
-    setDays(daysData.data);
-  };
-  
-  //Getting API data
-  const fetchData = () => { 
+//Getting API data
+const fetchDataWithHandler = function(handler) {
+  return () => { 
     axios.all([
       client.get('/days'),
       client.get('/interviewers'),
       client.get('/appointments')
-    ]).then(axios.spread(handleData));
+    ]).then(axios.spread(handler));
+  };
+};
+
+
+
+
+function Application(props) {
+  // Values to be loaded (roughly) once
+  const [state, setState] = useState({
+    interviewers: {},
+    appointments: {},
+    days: {}
+  });
+  const [selectedDayId, setSelectedDayId] = useState(1);
+  
+  // Sort of transient states (changed based on other state changes)
+  const [day, setDay] = useState({});
+  const [dailyAppointments, setDailyAppointments] = useState([]);
+  const [availableInterviewers, setAvailableInterviewers] = useState([]);
+  //Whenever setDay is called, component is re-rendered
+
+  //ensuring that API data sets State
+  const handleData = (daysData, interviewersData, appointmentsData) => {
+    setState({
+      interviewers: interviewersData.data,
+      appointments: appointmentsData.data,
+      days: Object.fromEntries(daysData.data.map(day => [ day.id, day ]))
+    });
+  };
+  //Hook to make sure we run just once
+  useEffect(fetchDataWithHandler(handleData), []);
+
+  const updateDailyStates = () => {
+    const { getAppointmentsForDayId, getInterviewersForDayId } = selectorsForState(state);
+    if (!state.days[selectedDayId]) return;
+    setDay(state.days[selectedDayId]);
+    setDailyAppointments(getAppointmentsForDayId(selectedDayId));
+    setAvailableInterviewers(getInterviewersForDayId(selectedDayId));
+  };
+  useEffect(updateDailyStates, [ state, selectedDayId ]);
+
+  const bookInterview = function(id, interview) {
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+    return client.put(`/appointments/${id}`, appointment, {
+      validateStatus: function (status) {
+        return status >= 200 && status < 300; // Accept only if status code is 2xx
+      }
+    }).then(result => {
+      const appointments = {
+        ...state.appointments,
+        [id]: getInterview(state, appointment)
+      };
+      setState({ ...state, appointments });
+    });
   };
 
- //Hook to make sure we run just once
-  useEffect(fetchData, []);
+  const removeInterview = function(id) {
+    return client.delete(`/appointments/${id}`, {
+      validateStatus: function (status) {
+        return status >= 200 && status < 300; // Accept only if status code is 2xx
+      }
+    }).then(result => {
+      const appointments = {
+        ...state.appointments,
+        [id]: {
+          ...state.appointments[id],
+          interview: null
+        }
+      };
+      setState({ ...state, appointments });
+    });
+  };
+
+
 
   return (
     <main className="layout">
@@ -44,58 +106,22 @@ export default function Application(props) {
         
         <hr className="sidebar__separator sidebar--centered" />
           <DayList
-            days={days}
+            days={state.days}
             selectedDayId={selectedDayId}
             setDay={(id) => setSelectedDayId(id)}
             />
         <nav className="sidebar__menu" />
-        <img
-          className="sidebar__lhl sidebar--centered"
+        <img className="sidebar__lhl sidebar--centered"
           src="images/lhl.png"
           alt="Lighthouse Labs"
         />
       </section>
       <section className="schedule">
-        
-        <AppointmentList {...{days, selectedDayId, allAppointments, allInterviewers}} />
+        <AppointmentList {...{day, dailyAppointments, availableInterviewers, bookInterview, removeInterview}} />
       </section>
     </main>
   );
 }
 
-export const appointments = [
-  {
-    id: 1,
-    time: "12pm",
-  },
-  {
-    id: 2,
-    time: "1pm",
-    interview: {
-      student: "Lydia Miller-Jones",
-      interviewer: {
-        id: 1,
-        name: "Sylvia Palmer",
-        avatar: "https://i.imgur.com/LpaY82x.png",
-      }
-    }
-  },
-  {
-    id: 3,
-    time: "2pm",
-    interview: {
-      student: "Vanilla Ice",
-      interviewer: {
-        id: 3,
-        name: "Mildred Nazir",
-        avatar: "https://i.imgur.com/T2WwVfS.png",
-      }
-    }
-  },
-  {
-    id: 'last',
-    time: "3pm"
-  }
-
-];
-
+export default hot(Application);
+//export default Application;

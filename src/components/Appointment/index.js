@@ -16,28 +16,54 @@ const CONFIRM = "CONFIRM";
 const ERROR = "ERROR";
 const CREATE = "CREATE";
 const EDIT = "EDIT";
-const STATUS = "STATUS";
+const SAVING = "SAVING";
+const DELETING = "DELETING";
 
 
 export default function Appointment(props) {
-  const { id, time, interview, allInterviewers } = props;
+  const { id, time, interview, availableInterviewers, bookInterview, removeInterview } = props;
   const visualMode = useVisualMode(interview ? SHOW : EMPTY);
+
+
+  const onSave = function(name, interviewer) {
+    return new Promise((resolve, reject) => {
+      visualMode.transition(SAVING);
+      resolve();
+    }).then(bookInterview(id, {
+      student: name,
+      interviewer
+    }))
+    .then(() => visualMode.transition(SHOW));
+  };
+
+  const onDelete = function(id) {
+    return new Promise((resolve, reject) => {
+      visualMode.transition(DELETING);
+      resolve();
+    })
+    .then(removeInterview(id))
+    .then(() => visualMode.transition(SHOW));
+  };
+
   let view = null;
   if (visualMode.mode === EMPTY) {
     view = <Empty onAdd={() => visualMode.transition(CREATE)} />;
   } else if (visualMode.mode === SHOW) {
     view = <Show {...{interview}} />;
   } else if (visualMode.mode === CREATE) {
-    view = <Form onCancel={() => visualMode.back()} {...{allInterviewers}} />
+    view = <Form onCancel={() => visualMode.back()} onSave={onSave} {...{availableInterviewers}} />
   } else if (visualMode.mode === CONFIRM) {
     view = null;
   } else if (visualMode.mode === ERROR) {
     view = null;
   } else if (visualMode.mode === EDIT) {
     view = null;
-  } else if (visualMode.mode === STATUS) {
-    view = null;
+  } else if (visualMode.mode === SAVING) {
+    view = <Status message="Saving..."/>;
+  } else if(visualMode.mode === DELETING) {
+    view = <Status message="Deleting..."/>
   }
+  
   
 
   return (

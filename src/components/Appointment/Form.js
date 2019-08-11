@@ -16,10 +16,7 @@ export default function Form(props) {
   }
 
   function onSave(){
-    props.onSave({
-      name: studentName,
-      interviewer
-    }) 
+    props.onSave(studentName, interviewer); 
   }
 
   return (
@@ -37,7 +34,7 @@ export default function Form(props) {
         placeholder="Enter Student Name"
       />
     </form>
-    <InterviewerList interviewers={props.allInterviewers} interviewer={interviewer} onChange={setInterviewer}/>
+    <InterviewerList interviewers={props.availableInterviewers} interviewer={interviewer} onChange={setInterviewer}/>
   </section>
   <section className="appointment__card-right">
     <section className="appointment__actions">

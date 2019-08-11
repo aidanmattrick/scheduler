@@ -7,23 +7,22 @@ export default function useVisualMode(initialMode) {
   const [history, setHistory] = useState([initialMode]);
   result.mode = mode;
 
-  let modeHistory = history;
 
 
   const back = function back() {
-    if (modeHistory.length > 1) {
-      modeHistory.pop()
-      setHistory(modeHistory);
+    if (history.length > 1) {
+      history.pop()
+      setHistory(history);
     }
-    setMode(modeHistory[modeHistory.length - 1]);
+    setMode(history[history.length - 1]);
     //setting the present to the last item in mode history
   };
 
   const transition = function transition(newMode, replace = false) {
-    if (replace) modeHistory.pop();
-    modeHistory.push(newMode);
-    setHistory(modeHistory);
-    setMode(modeHistory[modeHistory.length - 1]);
+    if (replace) history.pop();
+    history.push(newMode);
+    setHistory(history);
+    setMode(history[history.length - 1]);
     //setting the present to the last item in mode history
   }
 
