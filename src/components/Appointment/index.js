@@ -6,7 +6,7 @@ import Header from './Header';
 import Show from './Show';
 import Status from './Status';
 
-import React, { useCallback } from "react";
+import React from "react";
 import "./styles.scss";
 import useVisualMode from "../../hooks/useVisualMode";
 
@@ -33,27 +33,35 @@ export default function Appointment(props) {
       student: name,
       interviewer
     }))
-    .then(() => visualMode.transition(SHOW));
+    .then(() => visualMode.transition(SHOW, true));
   };
 
-  const onDelete = function(id) {
+  const onConfirmDelete = function() {
     return new Promise((resolve, reject) => {
-      visualMode.transition(DELETING);
+      visualMode.transition(DELETING, true);
       resolve();
     })
     .then(removeInterview(id))
-    .then(() => visualMode.transition(SHOW));
+    .then(() => visualMode.transition(EMPTY, true));
   };
+
+  const onDelete = function() {
+    visualMode.transition(CONFIRM);
+  }
+
+  const onCancel = function() {
+    visualMode.back();
+  }
 
   let view = null;
   if (visualMode.mode === EMPTY) {
     view = <Empty onAdd={() => visualMode.transition(CREATE)} />;
   } else if (visualMode.mode === SHOW) {
-    view = <Show {...{interview}} />;
+    view = <Show {...{interview, onDelete}} />;
   } else if (visualMode.mode === CREATE) {
     view = <Form onCancel={() => visualMode.back()} onSave={onSave} {...{availableInterviewers}} />
   } else if (visualMode.mode === CONFIRM) {
-    view = null;
+    view = <Confirm message="Are you sure you want to delete this appointment?" onCancel={onCancel} onConfirm={onConfirmDelete} />;
   } else if (visualMode.mode === ERROR) {
     view = null;
   } else if (visualMode.mode === EDIT) {

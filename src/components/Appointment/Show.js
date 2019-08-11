@@ -2,7 +2,6 @@ import React from "react";
 
 export default function Show(props){
   const { interview, onEdit, onDelete } = props;
-  console.log(interview);
   const student = (interview ? interview.student : "N/A");
   const interviewer = (interview && interview.interviewer ? interview.interviewer.name : "N/A");
   return (

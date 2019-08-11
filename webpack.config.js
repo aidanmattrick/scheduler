@@ -1,4 +1,3 @@
-const path = require('path');
 const _ = require('lodash');
 process.env.NODE_ENV = 'development';
 const devConfig = require('react-scripts/config/webpack.config')('development');
