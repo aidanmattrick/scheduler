@@ -4,8 +4,14 @@ import InterviewerListItem from "./InterviewerListItem";
 import PropTypes from 'prop-types';
 
 InterviewerList.propTypes = {
-  key: PropTypes.number,
-  //they say value
+  interviewer: PropTypes.number,
+  interviewers: PropTypes.arrayOf(
+    PropTypes.exact({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      avatar: PropTypes.string.isRequired
+    }).isRequired
+  ).isRequired,
   onChange: PropTypes.func.isRequired
 };
 
@@ -16,7 +22,7 @@ export default function InterviewerList(props) {
   <ul className="interviewers__list">
 
 
-  {Object.values(props.interviewers).map((interviewer) => {
+  {props.interviewers.map((interviewer) => {
     return (
     <InterviewerListItem
     key={interviewer.name}

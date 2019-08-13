@@ -1,3 +1,4 @@
+import 'airbnb-js-shims';
 import client from '../api';
 import axios from 'axios';
 import _ from 'lodash';

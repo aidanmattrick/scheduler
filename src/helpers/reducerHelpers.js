@@ -17,3 +17,9 @@ export function newMergedSubState(state, subState, cb) {
 // export function getSubState(state, subState) {
 //   return () => state[subState];
 // }
+
+// let obj1 = { a: 1, b: 2 }
+// let obj2 = { b: 3, c: 4 };
+
+//merge: data in obj 2 takes precedence over obj 1
+//replace: data in obj2 is all that exists, obj is completely overwritten
