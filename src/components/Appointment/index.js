@@ -21,7 +21,7 @@ const DELETING = "DELETING";
 
 
 export default function Appointment(props) {
-  const { id, time, interview, availableInterviewers, bookInterview, removeInterview } = props;
+  const { id, time, interview, interviewers: availableInterviewers, bookInterview, removeInterview } = props;
   const visualMode = useVisualMode(interview ? SHOW : EMPTY);
 
 
