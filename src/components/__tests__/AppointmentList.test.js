@@ -2,14 +2,14 @@ import React from "react";
 
 import { render, cleanup, act } from "@testing-library/react";
 
-import Application from "components/Application";
+import AppointmentList from "components/AppointmentList";
 
 afterEach(cleanup);
 
-describe("Application", () => {
+describe('AppointmentList', () => {
   it("renders without crashing", () => {
     act(() => {
-      render(<Application />)
+      render(<AppointmentList />)
     });
   });
 });

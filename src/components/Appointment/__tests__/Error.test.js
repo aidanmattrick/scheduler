@@ -2,14 +2,14 @@ import React from "react";
 
 import { render, cleanup, act } from "@testing-library/react";
 
-import Application from "components/Application";
+import Error from "../Error";
 
 afterEach(cleanup);
 
-describe("Application", () => {
+describe('Error', () => {
   it("renders without crashing", () => {
     act(() => {
-      render(<Application />)
+      render(<Error />)
     });
   });
 });

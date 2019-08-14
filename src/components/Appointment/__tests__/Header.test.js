@@ -2,14 +2,14 @@ import React from "react";
 
 import { render, cleanup, act } from "@testing-library/react";
 
-import Application from "components/Application";
+import Header from "../Header";
 
 afterEach(cleanup);
 
-describe("Application", () => {
+describe('Header', () => {
   it("renders without crashing", () => {
     act(() => {
-      render(<Application />)
+      render(<Header />)
     });
   });
 });

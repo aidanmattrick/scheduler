@@ -2,14 +2,14 @@ import React from "react";
 
 import { render, cleanup, act } from "@testing-library/react";
 
-import Application from "components/Application";
+import InterviewerListItem from "components/InterviewerListItem";
 
 afterEach(cleanup);
 
-describe("Application", () => {
+describe('InterviewerListItem', () => {
   it("renders without crashing", () => {
     act(() => {
-      render(<Application />)
+      render(<InterviewerListItem />)
     });
   });
 });

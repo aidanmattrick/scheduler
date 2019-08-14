@@ -2,14 +2,14 @@ import React from "react";
 
 import { render, cleanup, act } from "@testing-library/react";
 
-import Application from "components/Application";
+import DayList from "components/DayList";
 
 afterEach(cleanup);
 
-describe("Application", () => {
+describe('DayList', () => {
   it("renders without crashing", () => {
     act(() => {
-      render(<Application />)
+      render(<DayList />)
     });
   });
 });

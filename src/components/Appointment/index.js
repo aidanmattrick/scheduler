@@ -25,14 +25,17 @@ export default function Appointment(props) {
   const visualMode = useVisualMode(interview ? SHOW : EMPTY);
 
 
-  const onSave = function(name, interviewer) {
+  const onSave = async function(name, interviewer) {
     visualMode.transition(SAVING);
     bookInterview(id, {
       student: name,
       interviewer
     })
-      .then(() => visualMode.transition(SHOW, true))
-      .catch(error => visualMode.transition(ERROR_SAVE, true));
+    .then(() => visualMode.transition(SHOW, true))
+    .catch(error => {
+      debugger;
+      visualMode.transition(ERROR_SAVE, true)
+    });
   };
 
   const onConfirmDelete = function() {

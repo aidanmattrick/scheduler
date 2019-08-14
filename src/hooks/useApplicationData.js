@@ -16,6 +16,7 @@ function reducer(state, action) {
       const newDay = action.data ? action.data : state.day.id 
       return newReplacedSubState(state, 'day', (subState, state) => getNewDailyStates(state, newDay));
     case SET_APPLICATION_DATA:
+      // Note: warning in test is coming from here
       let newState = _.merge({}, state, action.data);
       return reducer(newState, { 
         type: SET_DAY, 
@@ -35,26 +36,29 @@ function reducer(state, action) {
       );
   }
 }
+
+
 //Getting API data
-const fetchDataWithHandler = function(handler) {
-  return () => { 
-    axios.all([
+const fetchDataWithHandler = function(dispatch) {
+  const handler = (daysData, interviewersData, appointmentsData) => {
+    dispatch({
+      type: SET_APPLICATION_DATA,
+      data: {
+        interviewers: interviewersData.data,
+        appointments: appointmentsData.data,
+        days: Object.fromEntries(daysData.data.map(day => [ day.id, day ]))
+      }
+    })
+  };
+  const fetch = async function() { 
+    const results = Promise.all([
       client.get('/days'),
       client.get('/interviewers'),
       client.get('/appointments')
-    ]).then(axios.spread(handler));
+    ]); 
+    handler(...(await results));
   };
-};
-
-const handleData = (dispatch, daysData, interviewersData, appointmentsData) => {
-  dispatch({
-    type: SET_APPLICATION_DATA,
-    data: {
-      interviewers: interviewersData.data,
-      appointments: appointmentsData.data,
-      days: Object.fromEntries(daysData.data.map(day => [ day.id, day ]))
-    }
-  });
+  return fetch;
 };
 
 function getNewDailyStates(state, selectedDay) {
@@ -79,9 +83,8 @@ function setInterview(dispatch, id, interview = null) {
 }
 
 function bookInterview(state, dispatch, id, interview) {
-  return client.put(`/appointments/${id}`, { interview: { ...interview } })
-  .then(response => {
-    setInterview(state, dispatch, id, {
+  return client.put(`/appointments/${id}`, { interview: { ...interview } }).then(() => {
+    setInterview(dispatch, id, {
       student: interview.student,
       interviewer: state.interviewers[interview.interviewer]
     });
@@ -107,7 +110,10 @@ export default function useApplicationData() {
     }
   });
   
-  useEffect(fetchDataWithHandler(_.bind(handleData, this, dispatch)), []);
+  useEffect(() => {
+    const fn = fetchDataWithHandler(dispatch);
+    fn();
+  }, []);
 
   return {
     state,
